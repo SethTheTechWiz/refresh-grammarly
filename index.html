@@ -3,20 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grammarly Refresh Example</title>
+    <title>Input Refresh Example</title>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             const inputField = document.getElementById('myInputField');
             
-            inputField.addEventListener('keydown', function(event) {
-                console.log('Key pressed:', event.key);
+            inputField.addEventListener('input', function() {
+                console.log('Input changed!');
                 
-                // Trigger a change event to simulate input refresh
-                const event = new Event('input', {
-                    bubbles: true,
-                    cancelable: true,
-                });
-                inputField.dispatchEvent(event);
+                // Temporarily remove focus
+                inputField.blur();
+                
+                // Restore focus after a brief delay
+                setTimeout(() => {
+                    inputField.focus();
+                }, 100);  // Adjust delay as needed
             });
         });
     </script>
