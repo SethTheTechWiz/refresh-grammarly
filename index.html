@@ -3,26 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Input Refresh Example</title>
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            const inputField = document.getElementById('myInputField');
-            
-            inputField.addEventListener('input', function() {
-                console.log('Input changed!');
-                
-                // Temporarily remove focus
-                inputField.blur();
-                
-                // Restore focus after a brief delay
-                setTimeout(() => {
-                    inputField.focus();
-                }, 10);  // Adjust delay as needed
-            });
-        });
-    </script>
+    <title>Input Refresh and Synonyms</title>
+    <style>
+        #synonyms {
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
     <input type="text" id="myInputField" placeholder="Type here...">
+    <div id="synonyms"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputField = document.getElementById('myInputField');
+            const synonymsDiv = document.getElementById('synonyms');
+
+            // Function to fetch synonyms for a given word
+            async function fetchSynonyms(word) {
+                if (!word.trim()) {
+                    synonymsDiv.innerHTML = "";
+                    return;
+                }
+
+                try {
+                    const apiUrl = `https://api.datamuse.com/words?rel_syn=${word}`;
+                    const response = await fetch(apiUrl);
+                    const data = await response.json();
+                    displaySynonyms(data);
+                } catch (error) {
+                    console.error('Error fetching synonyms:', error);
+                    synonymsDiv.innerHTML = "Error fetching synonyms.";
+                }
+            }
+
+            // Function to display synonyms
+            function displaySynonyms(synonyms) {
+                if (synonyms.length === 0) {
+                    synonymsDiv.innerHTML = "No synonyms found.";
+                    return;
+                }
+
+                const synonymList = synonyms.map(syn => syn.word).join(', ');
+                synonymsDiv.innerHTML = `<strong>Synonyms:</strong> ${synonymList}`;
+            }
+
+            // Event listener for input changes
+            inputField.addEventListener('input', () => {
+                const currentWord = getCurrentWord(inputField.value, inputField.selectionStart);
+                fetchSynonyms(currentWord);
+            });
+
+            // Function to get the word at the cursor position
+            function getCurrentWord(text, cursorPos) {
+                const textBeforeCursor = text.slice(0, cursorPos);
+                const lastSpaceIndex = textBeforeCursor.lastIndexOf(' ');
+                const start = lastSpaceIndex === -1 ? 0 : lastSpaceIndex + 1;
+                const wordAfterSpace = text.slice(start);
+                const endOfWordIndex = wordAfterSpace.indexOf(' ');
+
+                if (endOfWordIndex === -1) {
+                    return wordAfterSpace;
+                } else {
+                    return wordAfterSpace.slice(0, endOfWordIndex);
+                }
+            }
+        });
+    </script>
 </body>
 </html>
