@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammarly Refresh Example</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const inputField = document.getElementById('myInputField');
+            
+            inputField.addEventListener('keydown', function(event) {
+                console.log('Key pressed:', event.key);
+                
+                // Trigger a change event to simulate input refresh
+                const event = new Event('input', {
+                    bubbles: true,
+                    cancelable: true,
+                });
+                inputField.dispatchEvent(event);
+            });
+        });
+    </script>
+</head>
+<body>
+    <input type="text" id="myInputField" placeholder="Type here...">
+</body>
+</html>
